@@ -1,7 +1,7 @@
 # Matching the Monkey — the tournament harness
 
 This is the evaluation harness behind *Matching the Monkey*
-(Pacific Coast Labs, 2026 — [Zenodo DOI](https://doi.org/10.5281/zenodo.21755321)).
+(Pacific Coast Labs, 2026 — [Zenodo DOI, v2](https://doi.org/10.5281/zenodo.22806882)).
 It races hockey player metrics against each other, and against a
 deliberately dumb baseline, under one fixed protocol. Our own
 model's values ship in this repo as the built-in entrant. Everyone
