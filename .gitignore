@@ -1,0 +1,7 @@
+# Bring-your-own data: never committed, never redistributed
+data/entrants/
+data/eh/
+data/hockeystats/
+data/mp/
+data/hockey_alchemy/
+__pycache__/
