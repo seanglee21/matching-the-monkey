@@ -332,6 +332,16 @@ def main():
         print(f"{pn:>{pw}s} | "
               + "".join(f"{v:+{jw}.3f}" for v in vals)
               + f"{sum(vals) / len(vals):+9.3f}")
+    print("\nper-transition breakdown:")
+    for ti, N in enumerate(TRANSITIONS):
+        print(f"\n{N}->{N + 1}")
+        print(" " * pw + " | "
+              + "".join(f"{j:>{jw}s}" for j in judge_names))
+        for pn in pred_names:
+            vals = [acc[(pn, j)][ti] for j in judge_names]
+            print(f"{pn:>{pw}s} | "
+                  + "".join(f"{v:+{jw}.3f}" for v in vals))
+
     print("\ncolumn winners:")
     for j in judge_names:
         best = max(pred_names, key=lambda p: sum(acc[(p, j)]) / nt)
