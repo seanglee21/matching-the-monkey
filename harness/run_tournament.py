@@ -43,7 +43,7 @@ Normalized entrant CSV columns:
 An entrant needs seasons 2022-2025 to enter (2025 = 2025-26, the
 final judge year); earlier seasons, when present, feed its Marcel.
 With no manifest (or an empty one) the tournament still runs:
-ours-raw vs ours-proj judged by our own next-season values — the
+ours vs ours-marcel judged by our own next-season values — the
 out-of-the-box smoke test.
 
 Usage:
@@ -180,7 +180,7 @@ for _grp in ("F", "D"):
         sm[(_grp, _a)] = sum(_vals) / len(_vals) if _vals else 0.0
 
 
-def ours_proj(i, sname):
+def ours_marcel(i, sname):
     """5/4/3 Marcel + K ballast + age curve on our own values."""
     N = int(sname[7:11])
     cur = ours[sname]
@@ -289,7 +289,7 @@ def main():
     else:
         print(f"no manifest at {mpath} — running ours-only smoke")
 
-    pred_names = ["ours-raw", "ours-proj"]
+    pred_names = ["ours", "ours-marcel"]
     for name, _, _ in entrants:
         pred_names += [name, f"{name}-marcel"]
     judge_names = ["ours"] + [name for name, _, _ in entrants]
@@ -301,8 +301,8 @@ def main():
         sname, sname1 = season_of[N], season_of[N + 1]
         i = SEASONS.index(sname)
         preds = {
-            "ours-raw": {k: v[0] for k, v in ours[sname].items()},
-            "ours-proj": ours_proj(i, sname),
+            "ours": {k: v[0] for k, v in ours[sname].items()},
+            "ours-marcel": ours_marcel(i, sname),
         }
         judges = {"ours": {k: v[0] for k, v in ours[sname1].items()}}
         for name, series, ascale in entrants:
