@@ -21,11 +21,11 @@ values, mean over the three transitions 2022->23, 2023->24,
 regressed version of itself, the raw number is describing, not
 predicting.
 
-Entrant manifest (JSON; default .scratch/entrants/entrants.json):
+Entrant manifest (JSON; default data/entrants/entrants.json):
 
     {"entrants": [
-        {"name": "EH", "csv": ".scratch/entrants/eh.csv"},
-        {"name": "MP", "csv": ".scratch/entrants/mp.csv",
+        {"name": "EH", "csv": "data/entrants/eh.csv"},
+        {"name": "MP", "csv": "data/entrants/mp.csv",
          "age_scale": 8.0}
     ]}
 
