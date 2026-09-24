@@ -15,7 +15,10 @@ python harness/run_tournament.py
 
 With no other data present, that runs the built-in smoke test:
 our raw values against our projection, judged by our own
-next-season values. Add entrants and the tournament grows.
+next-season values. Smoke numbers use the full built-in sample;
+the published table appears once entrants are added, because the
+strict common sample re-restricts every column. Add entrants and
+the tournament grows.
 
 ## The protocol
 
@@ -78,9 +81,10 @@ An entrant needs seasons 2022-2025 to be graded; seasons back to
 ## The bet
 
 Our 2026-27 projections freeze in a public, timestamped commit
-before opening night, with a pre-registered grading rubric. In
-April 2027 this harness grades everyone: us, the incumbents, and
-the monkey. If we lose to the monkey, that gets published too.
+before opening night, with the scoring rules pre-registered. In
+April 2027 the table reruns on the season that actually
+happened: us, the incumbents, and the monkey. If we lose to the
+monkey, that gets published too.
 
 ## License
 
