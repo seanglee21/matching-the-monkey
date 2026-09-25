@@ -53,6 +53,35 @@ def parse_season(s):
     raise ValueError(f"unparseable season: {s!r}")
 
 
+def format_drift(name, missing, found):
+    """A shop changed its file format: stop loudly, never convert
+    silently-wrong data. A zeroed or misparsed entrant would put
+    wrong numbers next to someone's name."""
+    print(f"ERROR: {name} format drift — expected column(s) "
+          f"{missing} not found.")
+    print(f"  columns present: {sorted(found)}")
+    print("  The source format may have changed since this "
+          "converter was written (September 2026). Either adjust "
+          "the converter, or normalize the file yourself to the "
+          "entrant CSV spec (player,season,position,gp,value) and "
+          "add it to data/entrants/entrants.json by hand.")
+    raise SystemExit(2)
+
+
+def sanity_check_values(name, rows):
+    """Post-conversion guard: a column-mapping mistake typically
+    yields all-zero values. Refuse to write them."""
+    if not rows:
+        return
+    nonzero = sum(1 for r in rows if r[4])
+    if nonzero < max(1, len(rows) // 10):
+        print(f"ERROR: {name} conversion produced "
+              f"{len(rows) - nonzero}/{len(rows)} zero values — "
+              "the value column mapping looks wrong. Refusing to "
+              "write a garbage entrant.")
+        raise SystemExit(2)
+
+
 def write_rows(name, rows):
     OUT.mkdir(parents=True, exist_ok=True)
     path = OUT / f"{name}.csv"
@@ -71,7 +100,12 @@ def convert_season_column_csv(name, src, pk, sk, wk, gk, posk):
         return False
     rows = []
     with open(src, encoding="utf-8-sig", errors="replace") as f:
-        for r in csv.DictReader(f):
+        reader = csv.DictReader(f)
+        need = {pk, sk, wk, gk, posk}
+        have = set(reader.fieldnames or [])
+        if not need <= have:
+            format_drift(name, sorted(need - have), have)
+        for r in reader:
             pos = (r.get(posk) or "").upper()
             if pos.startswith("G"):
                 continue
@@ -83,6 +117,7 @@ def convert_season_column_csv(name, src, pk, sk, wk, gk, posk):
                 continue
             rows.append([r.get(pk, ""), year,
                          "D" if "D" in pos else "F", gp, val])
+    sanity_check_values(name, rows)
     return write_rows(name, rows)
 
 
@@ -106,7 +141,13 @@ def convert_mp(fetch):
             print(f"skip MP {year}: no local snapshot "
                   "(pass --fetch-mp to pull live)")
             continue
-        for r in csv.DictReader(io.StringIO(raw)):
+        reader = csv.DictReader(io.StringIO(raw))
+        need = {"situation", "games_played", "gameScore", "name",
+                "position"}
+        have = set(reader.fieldnames or [])
+        if not need <= have:
+            format_drift("mp", sorted(need - have), have)
+        for r in reader:
             if r.get("situation") != "all":
                 continue
             try:
@@ -120,6 +161,7 @@ def convert_mp(fetch):
     if not rows:
         print("skip MP: nothing loaded")
         return False
+    sanity_check_values("mp", rows)
     return write_rows("mp", rows)
 
 
@@ -134,7 +176,15 @@ def convert_ha():
         p = snap / f"gar_leaders_{year}{year + 1}.json"
         if not p.is_file():
             continue
-        for r in json.loads(p.read_text(encoding="utf-8"))["leaders"]:
+        payload = json.loads(p.read_text(encoding="utf-8"))
+        if "leaders" not in payload:
+            format_drift("ha", ["leaders"], payload.keys())
+        leaders = payload["leaders"]
+        if leaders and not any("rapm_total_war" in r
+                               for r in leaders[:25]):
+            format_drift("ha", ["rapm_total_war"],
+                         leaders[0].keys())
+        for r in leaders:
             pos = (r.get("position") or "").upper()
             if pos == "G":
                 continue
@@ -147,6 +197,7 @@ def convert_ha():
     if not rows:
         print(f"skip HA: no gar_leaders files in {snap.name}")
         return False
+    sanity_check_values("ha", rows)
     return write_rows("ha", rows)
 
 

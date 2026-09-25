@@ -65,6 +65,18 @@ a CSV with columns `player,season,position,gp,value` (season =
 start year, e.g. 2022 for 2022-23) and add it to
 `data/entrants/entrants.json`.
 
+The layering, stated plainly: the normalized CSV is the
+interface, and `make_entrants.py` is the reference
+implementation of the normalization for the four shops above.
+Normalization choices are part of the protocol — multi-team
+seasons aggregate, MoneyPuck rows filter to the all-situations
+line, and each shop's value field is named in the converter — so
+to reproduce the published table, run the converters on the
+named source files rather than hand-rolling CSVs. Your own
+metric needs only the CSV spec. If a shop changes its format,
+the converter stops loudly instead of converting wrong numbers
+next to someone's name.
+
 An entrant needs seasons 2022-2025 to be graded; seasons back to
 2019, when present, feed its Marcel.
 
