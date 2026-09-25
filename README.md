@@ -92,11 +92,13 @@ An entrant needs seasons 2022-2025 to be graded; seasons back to
 
 ## The bet
 
-Our 2026-27 projections freeze in a public, timestamped commit
-before opening night, with the scoring rules pre-registered. In
-April 2027 the table reruns on the season that actually
-happened: us, the incumbents, and the monkey. If we lose to the
-monkey, that gets published too.
+Our 2026-27 projections are FROZEN in this repository:
+`data/projections_2026_27.csv`, generated deterministically by
+`harness/freeze_2026_27.py` from the shipped data (rerun it and
+diff to verify). The scoring rules are pre-registered in
+[SCORING.md](SCORING.md). In April 2027 the table reruns on the
+season that actually happened: us, the incumbents, and the
+monkey. If we lose to the monkey, that gets published too.
 
 ## License
 
