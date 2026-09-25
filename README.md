@@ -78,7 +78,12 @@ the converter stops loudly instead of converting wrong numbers
 next to someone's name.
 
 An entrant needs seasons 2022-2025 to be graded; seasons back to
-2019, when present, feed its Marcel.
+2019, when present, feed its Marcel. One asymmetry, disclosed:
+our own values begin in 2021-22, so on the first transition our
+Marcel has two history seasons where rivals may have three.
+Shallower history makes a projection noisier, so this
+disadvantages our row rather than helping it; the frozen 2026-27
+projection launches from 2025-26 with full history.
 
 ## What ships here
 
