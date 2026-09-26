@@ -4,7 +4,7 @@ The artifact redistributes nothing third-party. This script converts
 files YOU obtained from their publishers into the normalized entrant
 CSVs that run_tournament.py reads, and writes the entrant manifest.
 Every converter is skipped silently-with-a-note when its source
-isn't present — bring what you have, the tournament sizes to it.
+isn't present. Bring what you have and the tournament sizes to it.
 
 Known shops and where their files go (paths under data/):
 
@@ -17,7 +17,7 @@ Known shops and where their files go (paths under data/):
 - Hockey Alchemy (public API snapshot):
     data/hockey_alchemy/snap_<date>/gar_leaders_<YYYYYYYY>.json
 
-Your own metric: skip this script — write a normalized CSV
+Your own metric needs no converter. Write a normalized CSV
 (player,season,position,gp,value; season = start year) and add it
 to the manifest by hand.
 
@@ -57,7 +57,7 @@ def format_drift(name, missing, found):
     """A shop changed its file format: stop loudly, never convert
     silently-wrong data. A zeroed or misparsed entrant would put
     wrong numbers next to someone's name."""
-    print(f"ERROR: {name} format drift — expected column(s) "
+    print(f"ERROR: {name} format drift. Expected column(s) "
           f"{missing} not found.")
     print(f"  columns present: {sorted(found)}")
     print("  The source format may have changed since this "
@@ -76,7 +76,7 @@ def sanity_check_values(name, rows):
     nonzero = sum(1 for r in rows if r[4])
     if nonzero < max(1, len(rows) // 10):
         print(f"ERROR: {name} conversion produced "
-              f"{len(rows) - nonzero}/{len(rows)} zero values — "
+              f"{len(rows) - nonzero}/{len(rows)} zero values, so "
               "the value column mapping looks wrong. Refusing to "
               "write a garbage entrant.")
         raise SystemExit(2)
@@ -130,7 +130,7 @@ def convert_mp(fetch):
                                       errors="replace")
         elif fetch:
             print(f"fetching MoneyPuck {year} live "
-                  "(unpinned input — snapshot it for records)")
+                  "(unpinned input; snapshot it for records)")
             req = urllib.request.Request(
                 "https://moneypuck.com/moneypuck/playerData/"
                 f"seasonSummary/{year}/regular/skaters.csv",

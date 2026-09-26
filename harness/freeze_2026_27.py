@@ -1,12 +1,12 @@
-"""Generate the frozen 2026-27 projections — THE freeze artifact.
+"""Generate the frozen 2026-27 projections.
 
     python harness/freeze_2026_27.py
 
 Writes data/projections_2026_27.csv: our projected 2026-27 value
 (WAR-style, per-82) for every skater with 30+ GP in 2025-26.
 
-The recipe is exactly the tournament's Marcel — the same one every
-entrant faces — launched from the final shipped season:
+The recipe is the tournament's own Marcel, the same one every
+entrant faces, launched from the final shipped season:
 
     5/4/3 GP-weighted average over 2025-26 / 2024-25 / 2023-24,
     K=40 ballast toward the 2025-26 positional mean,
@@ -14,7 +14,7 @@ entrant faces — launched from the final shipped season:
 
 Every input ships in this repo (data/ours_values.csv,
 data/players.csv; the age table derives from them inside
-run_tournament), and the script is deterministic — rerun it and
+run_tournament). The script is deterministic: rerun it and
 diff against the committed file to verify the freeze was produced
 by the stated recipe and nothing else.
 """

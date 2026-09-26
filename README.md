@@ -1,55 +1,51 @@
-# Matching the Monkey — the tournament harness
+# Matching the Monkey
 
-This is the evaluation harness behind *Matching the Monkey*
-(Pacific Coast Labs, 2026 — [Zenodo DOI, v2](https://doi.org/10.5281/zenodo.22806882)).
-It races hockey player metrics against each other, and against a
-deliberately dumb baseline, under one fixed protocol. Our own
-model's values ship in this repo as the built-in entrant. Everyone
-else is bring-your-own-data.
-
-One command:
+The evaluation harness behind *Matching the Monkey* (Pacific
+Coast Labs, 2026). It races hockey player metrics against each
+other, and against a deliberately dumb baseline, under one fixed
+protocol. Our model's values ship here as the built-in entrant.
+Everyone else is bring your own data.
 
 ```
 python harness/run_tournament.py
 ```
 
-With no other data present, that runs the built-in smoke test:
-our raw values against our projection, judged by our own
-next-season values. Smoke numbers use the full built-in sample;
-the published table appears once entrants are added, because the
-strict common sample re-restricts every column. Add entrants and
-the tournament grows.
+Run that with nothing else present and you get the built-in
+smoke test: our raw values against our projection, judged by our
+own next-season values. Smoke numbers use the full built-in
+sample. The published table appears once entrants are added,
+because the strict common sample re-restricts every column.
 
 ## The protocol
 
-Fixed, identical to the paper:
+- season totals become per-82 rates
+- skaters with 30+ GP; no goalies
+- strict common sample: a player is scored by every predictor
+  and every judge column, or dropped
+- Spearman rank correlation against each judge's next-season
+  values
+- mean over three transitions: 2022-23, 2023-24, and 2024-25,
+  each into the following season
+- every entrant also enters as its own Marcel: 5/4/3 weights
+  over up to three prior seasons, K=40 ballast toward the
+  positional mean, and an age adjustment. The age table is
+  derived inside the harness from the shipped values. Entrants
+  in other units set `age_scale` in the manifest.
 
-- WAR-style season totals converted to per-82 rates
-- skaters with 30+ GP; goalies excluded
-- strict common sample: every player scored by EVERY predictor
-  and judge column, or dropped
-- Spearman rank correlation of each predictor against each
-  judge's next-season values
-- mean over three transitions: 2022→23, 2023→24, 2024→25
-- every entrant also enters as its own Marcel: 5/4/3 weighting
-  over up to three prior seasons, ballast K=40 toward the
-  positional mean, and an age adjustment (the age-delta table is
-  derived inside the harness from the shipped values; entrants in
-  other units pass `age_scale` in the manifest)
-
-The monkey law: if a metric's raw number loses to a Marcel built
-from that metric's own history, on that metric's own scoreboard,
-the raw number is describing the past, not predicting the future.
+If a metric's raw number loses to a Marcel built from its own
+history, on its own scoreboard, the raw number is describing the
+past rather than predicting the future. That is the monkey
+result. It held for every metric we tested, ours included.
 
 ## Bring your own entrants
 
-Nothing third-party ships in this repo. You obtain files from
-their publishers yourself and drop them under `data/`:
+Nothing third-party ships in this repo. Get the files from their
+publishers yourself and drop them under `data/`:
 
-- **Evolving-Hockey** (subscriber export): `data/eh/eh_gar_skaters_2007_2026.csv`
-- **HockeyStats** (public download): `data/hockeystats/WAR (1).csv`
-- **MoneyPuck** (public download, or `--fetch-mp`): `data/mp/skaters_<year>_snap<date>.csv`
-- **Hockey Alchemy** (public API): `data/hockey_alchemy/snap_<date>/gar_leaders_<YYYYYYYY>.json`
+- Evolving-Hockey (subscriber export): `data/eh/eh_gar_skaters_2007_2026.csv`
+- HockeyStats (public download): `data/hockeystats/WAR (1).csv`
+- MoneyPuck (public download, or `--fetch-mp`): `data/mp/skaters_<year>_snap<date>.csv`
+- Hockey Alchemy (public API): `data/hockey_alchemy/snap_<date>/gar_leaders_<YYYYYYYY>.json`
 
 Then:
 
@@ -59,55 +55,53 @@ python harness/run_tournament.py
 ```
 
 `make_entrants.py` converts whatever it finds into normalized
-entrant CSVs and writes the manifest; missing sources are skipped
-with a note. Your own metric enters without any converter: write
-a CSV with columns `player,season,position,gp,value` (season =
-start year, e.g. 2022 for 2022-23) and add it to
+entrant CSVs and writes the manifest. Missing sources are
+skipped with a note. Your own metric needs no converter: write a
+CSV with columns `player,season,position,gp,value` (season is
+the start year, so 2022 means 2022-23) and add a line to
 `data/entrants/entrants.json`.
 
-The layering, stated plainly: the normalized CSV is the
-interface, and `make_entrants.py` is the reference
-implementation of the normalization for the four shops above.
-Normalization choices are part of the protocol — multi-team
-seasons aggregate, MoneyPuck rows filter to the all-situations
-line, and each shop's value field is named in the converter — so
-to reproduce the published table, run the converters on the
-named source files rather than hand-rolling CSVs. Your own
-metric needs only the CSV spec. If a shop changes its format,
-the converter stops loudly instead of converting wrong numbers
-next to someone's name.
+The CSV spec is the interface and the converters are the
+reference normalization. Multi-team seasons aggregate, MoneyPuck
+rows filter to the all-situations line, and each shop's value
+field is named in its converter. Those choices are part of the
+protocol, so reproduce the published table by running the
+converters on the named source files rather than hand-rolling
+the CSVs. If a shop changes its format, the converter stops with
+an error instead of writing wrong numbers next to someone's
+name.
 
-An entrant needs seasons 2022-2025 to be graded; seasons back to
-2019, when present, feed its Marcel. One asymmetry, disclosed:
-our own values begin in 2021-22, so on the first transition our
-Marcel has two history seasons where rivals may have three.
-Shallower history makes a projection noisier, so this
-disadvantages our row rather than helping it; the frozen 2026-27
-projection launches from 2025-26 with full history.
+An entrant needs seasons 2022 through 2025 to be graded, and
+seasons back to 2019 feed its Marcel when present. One asymmetry
+worth knowing: our own values begin in 2021-22, so on the first
+transition our Marcel has two history seasons where rivals may
+have three. Shallower history makes a projection noisier, which
+cuts against our row. The frozen 2026-27 projection launches
+from 2025-26 with full history.
 
 ## What ships here
 
-- `harness/` — the tournament runner and the entrant converters
-- `data/ours_values.csv` — our per-season player values (the
-  paper's pWAR individual component), one row per player-season
-- `data/players.csv` — the join list: player name, position
-  class, and birth date per NHL player id (factual data from the
-  NHL's public API; joins to third-party files are by normalized
-  name + position)
+- `harness/` holds the tournament runner and the converters
+- `data/ours_values.csv` holds our per-season player values, one
+  row per player-season
+- `data/players.csv` is the join list: name, position class, and
+  birth date per NHL player id. Joins to third-party files use
+  normalized name plus position.
 
 ## The bet
 
-Our 2026-27 projections are FROZEN in this repository:
-`data/projections_2026_27.csv`, generated deterministically by
-`harness/freeze_2026_27.py` from the shipped data (rerun it and
-diff to verify). The scoring rules are pre-registered in
-[SCORING.md](SCORING.md). In April 2027 the table reruns on the
-season that actually happened: us, the incumbents, and the
-monkey. If we lose to the monkey, that gets published too.
+Our 2026-27 projections are frozen in this repository:
+`data/projections_2026_27.csv`, generated by
+`harness/freeze_2026_27.py` from the shipped data. The script is
+deterministic, so rerun it and diff the file if you want proof
+that the freeze is the stated recipe and nothing else. The
+scoring rules are pre-registered in [SCORING.md](SCORING.md). In
+April 2027 the table reruns on the season that actually
+happened. If we lose to the monkey, that gets published too.
 
 ## License
 
-Code: MIT (see LICENSE). Our values in `data/` are released
-CC BY 4.0 — cite the paper. Player names and birth dates are
+Code is MIT (see LICENSE). Our values in `data/` are CC BY 4.0;
+credit Pacific Coast Labs. Player names and birth dates are
 facts from the NHL's public API. No third-party metric data is
 included or redistributed here.

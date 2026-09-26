@@ -1,9 +1,9 @@
-"""BYOD tournament runner — the paper's tournament, open to any entrant.
+"""BYOD tournament runner, open to any entrant.
 
 This is the runnable, extensible harness behind the published
 table: OUR shipped values are the built-in baseline, and any
 number of bring-your-own entrants join via a manifest. Nothing third-party
-ships here — you convert files you obtained yourself into the
+ships here. You convert files you obtained yourself into the
 normalized entrant format (make_entrants.py knows the common shops)
 and the tournament grades everybody against everybody.
 
@@ -12,7 +12,7 @@ with GP >= 30, strict common sample across ALL predictor and judge
 columns, Spearman rank correlation vs each judge's next-season
 values, mean over the three transitions 2022->23, 2023->24,
 2024->25. Every entrant also enters as its own 5/4/3 Marcel
-("<name>-marcel") — the monkey-law row: if a raw metric loses to a
+("<name>-marcel"). If a raw metric loses to a
 regressed version of itself, the raw number is describing, not
 predicting.
 
@@ -38,7 +38,7 @@ Normalized entrant CSV columns:
 An entrant needs seasons 2022-2025 to enter (2025 = 2025-26, the
 final judge year); earlier seasons, when present, feed its Marcel.
 With no manifest (or an empty one) the tournament still runs:
-ours vs ours-marcel judged by our own next-season values — the
+ours vs ours-marcel judged by our own next-season values, the
 out-of-the-box smoke test.
 
 Usage:
@@ -92,7 +92,7 @@ def _spearman(xs: list[float], ys: list[float]) -> float:
 
 # ---------------------------------------------------------------------------
 # Built-in baseline: our shipped values (identical machinery to the
-# landscape of record — rates, age curve, and 5/4/3 + K projection).
+# landscape of record: rates, age curve, and 5/4/3 + K projection).
 # data/ours_values.csv and data/players.csv are flat exports of the
 # same records the paper's script of record read.
 # ---------------------------------------------------------------------------
@@ -282,7 +282,7 @@ def main():
             print(f"entrant {name}: seasons "
                   f"{sorted(series)}, marcel history {hist or 'none'}")
     else:
-        print(f"no manifest at {mpath} — running ours-only smoke")
+        print(f"no manifest at {mpath}; running ours-only smoke")
 
     pred_names = ["ours", "ours-marcel"]
     for name, _, _ in entrants:
