@@ -1,13 +1,8 @@
-"""BYOD tournament runner — the paper's landscape, open to any entrant.
+"""BYOD tournament runner — the paper's tournament, open to any entrant.
 
-The published landscape (landscape_v2.py, the byte-identical script
-of record for the paper's printed table) compared our tabular pWAR
-against a fixed set of public metrics and additionally computed
-rows for model variants that stay inside the proprietary boundary;
-it expects the private-repo layout and does not run from this
-artifact. THIS script is the runnable, extensible harness: OUR
-shipped values are the built-in baseline, and any number of
-bring-your-own entrants join via a manifest. Nothing third-party
+This is the runnable, extensible harness behind the published
+table: OUR shipped values are the built-in baseline, and any
+number of bring-your-own entrants join via a manifest. Nothing third-party
 ships here — you convert files you obtained yourself into the
 normalized entrant format (make_entrants.py knows the common shops)
 and the tournament grades everybody against everybody.
